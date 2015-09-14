@@ -40,5 +40,5 @@ def mean_polygon(mov, pts):
 
     #mask3d = np.tile(mask, (frame,1,1))
     maskedimg = np.multiply(mov,mask)
-    mean = np.sum(np.sum(maskedimg, axis=1), axis=1)/mask.sum()
+    mean = np.sum(maskedimg)/mask.sum()
     return mean, maskedimg

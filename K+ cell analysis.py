@@ -12,20 +12,48 @@ import libtiff
 from sub import polygon
 
 savefig = 1
-abc = 'b'
-squareROI = 1 #1 = squareROI with area: (scan*2)*(scan*2); 0 = polygon ROI
+abc = 'a'
+squareROI = 0 #1 = squareROI with area: (scan*2)*(scan*2); 0 = polygon ROI
 scan = 20
-DiOboundary = 0
+DiOboundary = 0 #Use DiO channel to help click the coundary of cells
+assignpts = 0 #1 = provide pts, 0 = ginput
+filePath = '/Users/yungkuo/Documents/Data/K+ cell/091715 Anepps HEK K potential/Anepps_0.4uM_addVA_0.2uM_addK__1/Pos0/'
+
 if DiOboundary == 1:
     squareROI = 0
+if assignpts == 1:
+    DiOboundary = 1
+pts = np.array([[ 128.23610224,   73.51916933],
+ [ 132.32555911,   89.87699681],
+ [ 138.45974441,  109.30191693],
+ [ 152.77284345,  122.59265176],
+ [ 169.13067093,  136.9057508 ],
+ [ 186.51086262,  145.08466454],
+ [ 203.89105431,  147.12939297],
+ [ 222.29361022,  136.9057508 ],
+ [ 236.60670927,  123.61501597],
+ [ 251.94217252,  108.27955272],
+ [ 258.07635783,   89.87699681],
+ [ 257.05399361,   77.6086262 ],
+ [ 246.83035144,   64.31789137],
+ [ 232.5172524 ,   54.0942492 ],
+ [ 219.22651757,   46.93769968],
+ [ 203.89105431,   44.89297125],
+ [ 189.57795527,   47.9600639 ],
+ [ 174.24249201,   50.00479233],
+ [ 157.88466454,   50.00479233],
+ [ 139.48210863,   54.0942492 ],
+ [ 129.25846645,   54.0942492 ],
+ [ 119.03482428,   50.00479233],
+ [ 124.14664537,   63.29552716]])
 
-filePath = '/Users/yungkuo/Documents/Data/K+ cell/091415 TMRM DiO HEK K potential/DiO HBS_TMRM DMEM w FBS_250nM_30min_dish1__1/Pos0/'
+
 param = open(filePath+'metadata.txt', 'r')
 for count, line in enumerate(param.readlines()):
     if count == 4:
         print line
         interval = float(line.split(':')[1].split(',')[0])
-    if count == 41:
+    if count == 39:
         print line
         frame = float(line.split(':')[1].split(',')[0])
 
@@ -33,17 +61,24 @@ def listdir_nohidden(path):
     for f in os.listdir(path):
         if f.endswith('_Green_000.tif'):
             yield f
+if assignpts == 0:
+    if DiOboundary == 1:
+        mov1 = libtiff.TiffFile(filePath+'img_000000000_Blue_000.tif')
+        mov1 = np.array(mov1.get_tiff_array()[:,:,:], dtype='d')
+        mov1 = np.squeeze(mov1)
+        mov2 = libtiff.TiffFile(filePath+'img_000000000_Green_000.tif')
+        mov2 = np.array(mov2.get_tiff_array()[:,:,:], dtype='d')
+        mov2 = np.squeeze(mov2)
 
-if DiOboundary == 1:
-    mov = libtiff.TiffFile(filePath+'img_000000000_Blue_000.tif')
-    mov = np.array(mov.get_tiff_array()[:,:,:], dtype='d')
-    mov = np.squeeze(mov)
-    fig, ax = plt.subplots()
-    cax = ax.imshow(mov, interpolation='none', cmap='YlGn')
-    cbar = fig.colorbar(cax)
-    print("choose DiO boundary")
-    pts = plt.ginput(0,0)
-    pts = np.array(pts)
+        fig4, ax = plt.subplots()
+        cax1 = ax.imshow(mov1, interpolation='none', cmap='Greens', alpha=0.5)
+        cax2 = ax.imshow(mov2, interpolation='none', cmap='Reds', alpha=0.5)
+        cbar = fig4.colorbar(cax1)
+        cbar = fig4.colorbar(cax2)
+        print("choose DiO boundary")
+        pts = plt.ginput(0,0)
+        pts = np.array(pts)
+        print pts
 
 I = []
 t = []
@@ -81,7 +116,7 @@ for count, file in enumerate(listdir_nohidden(filePath)):
         bg = np.append(bg, bg1)
         cax = axarr[count/a, count%a].imshow(
               mov[pts[:,1]-scan:pts[:,1]+scan,pts[:,0]-scan:pts[:,0]+scan],
-              interpolation='none', cmap='afmhot', vmin=0, vmax=10000)
+              interpolation='none', cmap='afmhot', vmin=0, vmax=20000)
     if DiOboundary == 0:
         if squareROI == 0:
             if count == 0:
@@ -98,11 +133,12 @@ for count, file in enumerate(listdir_nohidden(filePath)):
                 ax.plot(pts[:,0],pts[:,1], '-o')
                 ax.set_xlim([0,ncol])
                 ax.set_ylim([nrow,0])
-            I1, img = polygon.mean_polygon(mov, pts)
+                mask = polygon.mask_polygon(mov, pts)
+            I1, img = polygon.mean_polygon(mov, mask)
             I = np.append(I, I1)
             cax = axarr[count/a, count%a].imshow(
                   img[np.min(pts[:,1]):np.max(pts[:,1]),np.min(pts[:,0]):np.max(pts[:,0])],
-                  interpolation='none', cmap='afmhot', vmin=0, vmax=10000)
+                  interpolation='none', cmap='afmhot', vmin=0, vmax=20000)
         axarr[count/a, count%a].set_xticks([])
         axarr[count/a, count%a].set_yticks([])
         fig2.canvas.draw()
@@ -117,11 +153,12 @@ for count, file in enumerate(listdir_nohidden(filePath)):
             ax.plot(pts[:,0],pts[:,1], '-o')
             ax.set_xlim([0,ncol])
             ax.set_ylim([nrow,0])
-        I1, img = polygon.mean_polygon(mov, pts)
+            mask = polygon.mask_polygon(mov, pts)
+        I1, img = polygon.mean_polygon(mov, mask)
         I = np.append(I, I1)
         cax = axarr[count/a, count%a].imshow(
             img[np.min(pts[:,1]):np.max(pts[:,1]),np.min(pts[:,0]):np.max(pts[:,0])],
-            interpolation='none', cmap='afmhot', vmin=0, vmax=10000)
+            interpolation='none', cmap='afmhot', vmin=0, vmax=20000)
         axarr[count/a, count%a].set_xticks([])
         axarr[count/a, count%a].set_yticks([])
         fig2.canvas.draw()
@@ -136,6 +173,8 @@ if squareROI == 1:
     ax.plot(t, bg, '-g^')
 ax.set_xlabel('Time (ms)')
 ax.set_ylabel('Fluorescence intensity')
+
+np.save(filePath+'IT_result.npy', I)
 if savefig == 1:
     fig1.savefig(filePath+abc+'.fig1_img.pdf', format='pdf', bbox_inches = 'tight')
     fig2.savefig(filePath+abc+'.fig2_ROI.pdf', format='pdf', bbox_inches = 'tight')

@@ -31,6 +31,20 @@ def inside_polygon(x, y, points):
 
 def mask_polygon(mov, pts):
     #frame=len(mov[:,0,0])
+    nrow=len(mov[0,:,0])
+    ncol=len(mov[0,0,:])
+    mask = np.zeros((nrow, ncol), dtype=np.int)
+    for i in range(nrow):
+        for j in range(ncol):
+            mask[i,j]=inside_polygon(j,i,pts)
+
+    #mask3d = np.tile(mask, (frame,1,1))
+    #maskedimg = np.multiply(mov,mask)
+    #mean = np.sum(maskedimg)/mask.sum()
+    return mask
+
+def mask2d_polygon(mov, pts):
+    #frame=len(mov[:,0,0])
     nrow=len(mov[:,0])
     ncol=len(mov[0,:])
     mask = np.zeros((nrow, ncol), dtype=np.int)
@@ -42,7 +56,6 @@ def mask_polygon(mov, pts):
     #maskedimg = np.multiply(mov,mask)
     #mean = np.sum(maskedimg)/mask.sum()
     return mask
-
 
 def mean3d_polygon(mov, pts):
     frame=len(mov[:,0,0])

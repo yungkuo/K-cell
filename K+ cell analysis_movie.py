@@ -11,19 +11,20 @@ import libtiff
 from sub import polygon
 #import matplotlib.animation as animation
 
-filePath = '/Users/yungkuo/Documents/Data/K+ cell/091715 DiO DPA K potential/'
-fileName = '002_add high K (28.1, 158)'
-savefig = 0
+filePath = '/Users/yungkuo/Documents/Data/K+ cell/100115 Anepps HEK K potential/'
+fileName = '007_add high K(28,158,1000)'
+savefig = 1
 abc = 'a'
 dt = 1/32.352
 scan = 10
-assignpts = 1
+frame_start = 0
+assignpts = 0
 if assignpts == 1:
     pts = np.load(filePath+fileName+'_'+abc+'_'+'pts.npy')
 
 mov = libtiff.TiffFile(filePath+fileName+'.tif')
 mov = np.array(mov.get_tiff_array()[:,:,:], dtype='d')
-#mov = mov[:,230:360, 150:320]
+mov[:frame_start,:, :] = mov[frame_start,:,:]
 frame=len(mov[:,0,0])
 nrow=len(mov[0,:,0])
 ncol=len(mov[0,0,:])

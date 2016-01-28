@@ -12,13 +12,13 @@ from sub import polygon
 import os
 #import matplotlib.animation as animation
 
-filePath = '/Users/yungkuo/Documents/Data/K+ cell/011116 peristaltic pump/'
+filePath = '/Users/yungkuo/Documents/Data/K+ cell/011716/'
 savemask = 1
-mask_type = 2 # 1 = polygon mask, 2 = threshold mask, 3 = multi spot
-
+mask_type = 3 # 1 = polygon mask, 2 = threshold mask, 3 = multi spot
+fileName = 'QD_VA_Period_20_cycle_7_2'
 def listdir_nohidden(path):
     for f in os.listdir(path):
-        if f.startswith('Anepps_VA_Period_40_cycle_10_X'):
+        if f.startswith(fileName):
             yield f
 frame = 0
 I = []
@@ -91,4 +91,4 @@ for count, file in enumerate(listdir_nohidden(filePath)):
                 cbar1 = fig.colorbar(cax1, ax=ax)
 #%%
 if savemask == 1:
-    np.save(filePath+'_mask{}.npy'.format(mask_type), mask)
+    np.save(filePath+fileName+'_mask{}.npy'.format(mask_type), mask)

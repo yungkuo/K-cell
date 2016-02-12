@@ -12,19 +12,21 @@ from sub import polygon
 import os
 #import matplotlib.animation as animation
 
-filePath = '/Users/yungkuo/Documents/Data/K+ cell/011716/'
+filePath = '/Users/yungkuo/Google Drive/020616/'
 savemask = 1
-mask_type = 3 # 1 = polygon mask, 2 = threshold mask, 3 = multi spot
-fileName = 'QD_VA_Period_20_cycle_7_2'
+mask_type = 2 # 1 = polygon mask, 2 = threshold mask, 3 = multi spot
+fileName = 'QDs_10uM VA_Period_20_cycle_7_10'
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if f.startswith(fileName):
             yield f
+
+datapath = filePath+'raw data/'
 frame = 0
 I = []
 bg = []
-for count, file in enumerate(listdir_nohidden(filePath)):
-    current_file = os.path.join(filePath, file)
+for count, file in enumerate(listdir_nohidden(datapath)):
+    current_file = os.path.join(datapath, file)
     tiffimg = tff.TiffFile(current_file)
     data = tiffimg.asarray().shape
     if count == 0:
@@ -91,4 +93,4 @@ for count, file in enumerate(listdir_nohidden(filePath)):
                 cbar1 = fig.colorbar(cax1, ax=ax)
 #%%
 if savemask == 1:
-    np.save(filePath+fileName+'_mask{}.npy'.format(mask_type), mask)
+    np.save(filePath+'results/'+fileName+'_mask{}.npy'.format(mask_type), mask)

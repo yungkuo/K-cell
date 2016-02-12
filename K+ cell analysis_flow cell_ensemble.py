@@ -16,16 +16,16 @@ from sub import polygon
 #from PIL import Image
 #import matplotlib.animation as animation
 
-filePath = '/Users/yungkuo/Documents/Data/K+ cell/011716/'
-fileName = 'QD_VA_Period_20_cycle_7_2'
-maskName = '_mask3.npy'
+filePath = '/Users/yungkuo/Google Drive/020616/'
+fileName = 'QDs_10uM VA_Period_20_cycle_7_9'
+maskName = 'QDs_10uM VA_Period_20_cycle_7_9_mask2.npy'
 savefig = 1
 abc = 'mpmask'
 dt = 0.03028 # 30ms = 32.352Hz, 100ms =
 bgscan = 30 #pixels
 assignmask = 1
 period = 20
-transiperiod = np.array([100,400]) # discard (transiperiod) frames
+transiperiod = np.array([100,100]) # discard (transiperiod) frames
                   # befroe and after the transition of low/high K buffer
                   # e.g. discard 1941-0 to 1941+100 timetrace points when calculating the mean
 bgmask = np.zeros((512,512))
@@ -34,8 +34,8 @@ bgmask[(-bgscan):, :bgscan] = 1
 #endframe = ''
 #%%
 if assignmask == 1:
-    mask = np.load(filePath+fileName+maskName)
-
+    mask = np.load(filePath+'results/'+maskName)
+datapath = filePath+'raw data/'
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if f.startswith(fileName) and f.endswith('.tif'):
@@ -44,8 +44,8 @@ def listdir_nohidden(path):
 frame = 0
 I = []
 bg = []
-for count, file in enumerate(listdir_nohidden(filePath)):
-    current_file = os.path.join(filePath, file)
+for count, file in enumerate(listdir_nohidden(datapath)):
+    current_file = os.path.join(datapath, file)
     if count == 0:
         tiffimg = tff.TiffFile(current_file)
         data = tiffimg.asarray().shape
@@ -121,8 +121,8 @@ hk_nperiod = int(frame*dt/period/2)
 
 if savefig == 1:
     #fig0.savefig(filePath+'fig0_QD.pdf', format='pdf', bbox_inches = 'tight')
-    fig1.savefig(filePath+fileName+abc+'_fig0_img.png', format='png', bbox_inches = 'tight')
-    fig2.savefig(filePath+fileName+abc+'_fig1_fluor.png', format='png', bbox_inches = 'tight')
+    fig1.savefig(filePath+'results/'+fileName+abc+'_fig0_img.png', format='png', bbox_inches = 'tight')
+    fig2.savefig(filePath+'results/'+fileName+abc+'_fig1_fluor.png', format='png', bbox_inches = 'tight')
 
 '''
 #%%
@@ -391,9 +391,9 @@ ax.set_ylabel(r'$\Delta$F/F')
 ax.set_title(r'$\Delta$F/F v.s. time')
 #%%
 if savefig == 1:
-    fig7.savefig(filePath+fileName+abc+'_fig7_2exp_sp.png', format='png', bbox_inches = 'tight')
-    fig8.savefig(filePath+fileName+abc+'_fig8_Fluor.png', format='png', bbox_inches = 'tight')
-    fig9.savefig(filePath+fileName+abc+'_fig9_dFF.png', format='png', bbox_inches = 'tight')
+    fig7.savefig(filePath+'results/'+fileName+abc+'_fig7_2exp_sp.png', format='png', bbox_inches = 'tight')
+    fig8.savefig(filePath+'results/'+fileName+abc+'_fig8_Fluor.png', format='png', bbox_inches = 'tight')
+    fig9.savefig(filePath+'results/'+fileName+abc+'_fig9_dFF.png', format='png', bbox_inches = 'tight')
 #%%
 # Fit only the low K part to 2 exponentials
 # apply moving average
@@ -570,6 +570,6 @@ fig11.canvas.draw()
 if savefig == 1:
     #fig1.savefig(filePath+'fig1 and 2/'+abc+'_fig1_img.png', format='png', bbox_inches = 'tight')
     #fig2.savefig(filePath+'fig1 and 2/'+abc+'_fig2_fluor.png', format='png', bbox_inches = 'tight')
-    fig10.savefig(filePath+fileName+abc+'_fig10_movingavg.png', format='png', bbox_inches = 'tight')
-    fig11.savefig(filePath+fileName+abc+'_fig11_fit and residuals.png', format='png', bbox_inches = 'tight')
+    fig10.savefig(filePath+'results/'+fileName+abc+'_fig10_movingavg.png', format='png', bbox_inches = 'tight')
+    fig11.savefig(filePath+'results/'+fileName+abc+'_fig11_fit and residuals.png', format='png', bbox_inches = 'tight')
 
